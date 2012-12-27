@@ -5,5 +5,6 @@
 	<classpathentry kind="lib" path="libs/derby.jar"/>
 	<classpathentry kind="lib" path="libs/metadata-extractor-2.6.4.jar"/>
 	<classpathentry kind="lib" path="libs/xmpcore.jar"/>
+	<classpathentry kind="lib" path="libs/commons-io-2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
