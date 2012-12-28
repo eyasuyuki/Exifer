@@ -13,11 +13,11 @@ import com.drew.metadata.exif.ExifIFD0Directory;
 
 public class ExifTest {
 	
-	void retrieve(File dir) throws ImageProcessingException, IOException {
+	void retrieve(File dir) {
 		File[] files = dir.listFiles();
 		if (files == null || files.length <= 0) return;
 		for (File f: files) {
-			if (f.isFile())      processFile(f);
+			if (f.isFile())      readExif(f);
 			if (f.isDirectory()) retrieve(f);
 		}
 		
@@ -41,14 +41,20 @@ public class ExifTest {
 		}
 	}
 	
-	void processFile(File file) throws ImageProcessingException, IOException {
+	void readExif(File file) {
+		//System.out.println("processFile: file.getName()="+file.getName());;
 		MimetypesFileTypeMap m = new MimetypesFileTypeMap();
 		if (m == null) return;
 		
 		String contentType = m.getContentType(file);
 		if (contentType == null || !contentType.equals("image/jpeg")) return;
 		
-		Metadata metadata = ImageMetadataReader.readMetadata(file);
+		Metadata metadata = null;
+		try {
+			metadata = ImageMetadataReader.readMetadata(file);
+		} catch (Exception e) {
+			//e.printStackTrace();
+		}
 		if (metadata == null) return;
 		
 		Directory dir = metadata.getDirectory(ExifIFD0Directory.class);
@@ -59,6 +65,7 @@ public class ExifTest {
 		long size = file.length();
 		Date date = dir.getDate(ExifIFD0Directory.TAG_DATETIME);
 		System.out.println("path="+path+", name="+name+", size="+size+", date="+date);
+		// TODO insert to database
 	}
 	
 	static void usage() {
