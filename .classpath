@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="torque/src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="libs/derby.jar"/>
 	<classpathentry kind="lib" path="libs/metadata-extractor-2.6.4.jar"/>
 	<classpathentry kind="lib" path="libs/xmpcore.jar"/>
+	<classpathentry kind="lib" path="libs/avalon-framework-api-4.3.jar"/>
+	<classpathentry kind="lib" path="libs/avalon-logkit-2.1.jar"/>
+	<classpathentry kind="lib" path="libs/commons-beanutils-core-1.7.0.jar"/>
+	<classpathentry kind="lib" path="libs/commons-collections-3.2.jar"/>
+	<classpathentry kind="lib" path="libs/commons-configuration-1.4.jar"/>
+	<classpathentry kind="lib" path="libs/commons-dbcp-1.2.2.jar"/>
+	<classpathentry kind="lib" path="libs/commons-lang-2.3.jar"/>
+	<classpathentry kind="lib" path="libs/commons-logging-1.1.jar"/>
+	<classpathentry kind="lib" path="libs/commons-pool-1.3.jar"/>
+	<classpathentry kind="lib" path="libs/concurrent-1.3.4.jar"/>
+	<classpathentry kind="lib" path="libs/jcs-1.3.jar"/>
+	<classpathentry kind="lib" path="libs/village-3.3.jar"/>
+	<classpathentry kind="lib" path="libs/xercesImpl-2.6.2.jar"/>
+	<classpathentry kind="lib" path="libs/xml-apis-2.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
