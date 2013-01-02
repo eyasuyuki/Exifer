@@ -1,0 +1,13 @@
+
+
+
+  Platform used: org.apache.torque.engine.platform.PlatformMysqlImpl
+
+
+  SQL file to be created: project-schema.sql
+
+    Primary Key: Yes       
+
+      
+
+

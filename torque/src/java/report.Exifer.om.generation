@@ -1,0 +1,36 @@
+
+targetdatabase = mysql
+
+correctGetters = 
+
+             
+
+
+
+
+
+
+
+
+
+    Peers generated in package com.example.exifer.db
+    Objects generated in package com.example.exifer.db
+    Managers generated in package com.example.exifer.db
+    Beans generated in package com.example.exifer.db.bean
+
+    Failed to create dir or dir already exists: /Users/yasuyuki/git/Exifer/torque/src/java/com/example/exifer/db/
+
+    Failed to create dir or dir already exists: /Users/yasuyuki/git/Exifer/torque/src/java/com/example/exifer/db/
+
+
+
+
+        exifmap
+
+        
+
+
+
+
+
+
