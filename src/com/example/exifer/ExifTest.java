@@ -1,12 +1,11 @@
 package com.example.exifer;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
+
 import javax.activation.MimetypesFileTypeMap;
 
 import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
