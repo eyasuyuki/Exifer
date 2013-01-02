@@ -5,6 +5,8 @@ import java.util.Date;
 
 import javax.activation.MimetypesFileTypeMap;
 
+import org.apache.torque.Torque;
+
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
@@ -30,10 +32,12 @@ public class ExifTest {
 			usage();
 			return;
 		}
+
 		File file = new File(args[0]);
 		ExifTest test = new ExifTest();
 //		test.processFile(file);
 		try {
+			Torque.init("torque.properties");
 			test.retrieve(file);
 		} catch (Exception e) {
 			e.printStackTrace();
