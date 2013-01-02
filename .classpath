@@ -20,5 +20,6 @@
 	<classpathentry kind="lib" path="libs/village-3.3.jar"/>
 	<classpathentry kind="lib" path="libs/xercesImpl-2.6.2.jar"/>
 	<classpathentry kind="lib" path="libs/xml-apis-2.0.2.jar"/>
+	<classpathentry kind="lib" path="libs/torque-3.3.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
