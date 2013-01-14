@@ -1,6 +1,7 @@
 package com.example.exifer;
 
 import java.io.File;
+import java.sql.Connection;
 import java.util.Date;
 
 import javax.activation.MimetypesFileTypeMap;
@@ -11,6 +12,7 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
+import com.example.exifer.db.Exifmap;
 
 public class ExifTest {
 	
@@ -39,6 +41,8 @@ public class ExifTest {
 		try {
 			Torque.init("torque.properties");
 			test.retrieve(file);
+			
+			Torque.shutdown();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -69,6 +73,16 @@ public class ExifTest {
 		Date date = dir.getDate(ExifIFD0Directory.TAG_DATETIME);
 		System.out.println("path="+path+", name="+name+", size="+size+", date="+date);
 		// TODO insert to database
+		Exifmap exifmap = new Exifmap();
+		exifmap.setPath(path);
+		exifmap.setName(name);
+		exifmap.setSize(size);
+		exifmap.setExifdate(date);
+		try {
+			exifmap.save();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	static void usage() {

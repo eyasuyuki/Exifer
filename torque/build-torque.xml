@@ -308,7 +308,6 @@
     unless="torque.internal.manualCreation"
     depends="create-db-check"
     description="==> generates the target database">
-
     <torque-data-model
       controlTemplate="${torque.template.sqlDbInit}"
       outputDirectory="${torque.sql.dir}"
