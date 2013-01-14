@@ -1,3 +1,2 @@
-drop database if exists exifdata;
-create database exifdata;
+-- generate databases for derby : do nothing
 

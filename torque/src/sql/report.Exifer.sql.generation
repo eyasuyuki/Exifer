@@ -1,7 +1,7 @@
 
 
 
-  Platform used: org.apache.torque.engine.platform.PlatformMysqlImpl
+  Platform used: org.apache.torque.engine.platform.PlatformDerbyImpl
 
 
   SQL file to be created: project-schema.sql

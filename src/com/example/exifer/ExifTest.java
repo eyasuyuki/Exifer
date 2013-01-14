@@ -49,12 +49,12 @@ public class ExifTest {
 	}
 	
 	void readExif(File file) {
-		//System.out.println("processFile: file.getName()="+file.getName());;
 		MimetypesFileTypeMap m = new MimetypesFileTypeMap();
 		if (m == null) return;
 		
-		String contentType = m.getContentType(file);
-		if (contentType == null || !contentType.equals("image/jpeg")) return;
+//		String contentType = m.getContentType(file);
+//		if (contentType == null || !contentType.equals("image/jpeg")) return;
+//		System.out.println("processFile: file.getName()="+file.getName()+", contentType="+contentType);;
 		
 		Metadata metadata = null;
 		try {

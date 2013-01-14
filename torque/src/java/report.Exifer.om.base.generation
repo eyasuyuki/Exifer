@@ -1,5 +1,5 @@
 
-targetdatabase = mysql
+targetdatabase = derby
 
 correctGetters = 
 
