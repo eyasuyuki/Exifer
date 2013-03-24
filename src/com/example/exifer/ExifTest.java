@@ -1,8 +1,7 @@
 package com.example.exifer;
 
 import java.io.File;
-import java.sql.Connection;
-import java.util.Date;
+import java.sql.Date;
 
 import javax.activation.MimetypesFileTypeMap;
 
@@ -12,7 +11,7 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
-import com.example.exifer.db.Exifmap;
+import com.example.exifer.db.ExifMap;
 
 public class ExifTest {
 	
@@ -70,19 +69,14 @@ public class ExifTest {
 		String path = file.getAbsolutePath();
 		String name = file.getName();
 		long size = file.length();
-		Date date = dir.getDate(ExifIFD0Directory.TAG_DATETIME);
+		java.util.Date date = dir.getDate(ExifIFD0Directory.TAG_DATETIME);
 		System.out.println("path="+path+", name="+name+", size="+size+", date="+date);
 		// TODO insert to database
-		Exifmap exifmap = new Exifmap();
+		ExifMap exifmap = new ExifMap();
 		exifmap.setPath(path);
 		exifmap.setName(name);
 		exifmap.setSize(size);
-		exifmap.setExifdate(date);
-		try {
-			exifmap.save();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		exifmap.setExifDate(new Date(date.getTime()));
 	}
 	
 	static void usage() {
