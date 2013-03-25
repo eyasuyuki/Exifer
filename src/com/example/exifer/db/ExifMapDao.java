@@ -13,7 +13,8 @@ import java.util.Properties;
 public class ExifMapDao {
 	private Connection conn = null;
 	
-	public ExifMapDao() throws SQLException  {
+	public ExifMapDao() throws SQLException, ClassNotFoundException  {
+		DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
 		conn = DriverManager.getConnection(
 				"jdbc:derby:/Users/yasuyuki/exifMap.db;create=true");
 		
@@ -28,12 +29,14 @@ public class ExifMapDao {
 	
 	public ExifMap insert(ExifMap exifMap) throws SQLException {
 		PreparedStatement st =
-				conn.prepareStatement(ExifMapTable.INSERT_EXIF_MAP_TABLE_SQL);
+				conn.prepareStatement(
+						ExifMapTable.INSERT_EXIF_MAP_TABLE_SQL
+						,Statement.RETURN_GENERATED_KEYS);
 		int i = 1;
-		st.setString(i++, exifMap.getPath());
-		st.setString(i++, exifMap.getName());
-		st.setLong(i++,   exifMap.getSize());
-		st.setDate(i++,   exifMap.getExifDate());
+		st.setString(i++,    exifMap.getPath());
+		st.setString(i++,    exifMap.getName());
+		st.setLong(i++,      exifMap.getSize());
+		st.setTimestamp(i++, exifMap.getExifDate());
 		st.executeUpdate();
 		ResultSet rs = st.getGeneratedKeys();
 		if (rs != null && rs.next()) {
@@ -52,11 +55,11 @@ public class ExifMapDao {
 		PreparedStatement st =
 				conn.prepareStatement(ExifMapTable.UPDATE_EXIF_MAP_TABLE_SQL);
 		int i = 1;
-		st.setString(i++, exifMap.getPath());
-		st.setString(i++, exifMap.getName());
-		st.setLong(i++,   exifMap.getSize());
-		st.setDate(i++,   exifMap.getExifDate());
-		st.setLong(i++,   exifMap.getId());
+		st.setString(i++,    exifMap.getPath());
+		st.setString(i++,    exifMap.getName());
+		st.setLong(i++,      exifMap.getSize());
+		st.setTimestamp(i++, exifMap.getExifDate());
+		st.setLong(i++,      exifMap.getId());
 		
 		count = st.executeUpdate();
 
@@ -77,6 +80,7 @@ public class ExifMapDao {
 				e.setPath(rs.getString(i++));
 				e.setName(rs.getString(i++));
 				e.setSize(rs.getLong(i++));
+				e.setExifDate(rs.getTimestamp(i++));
 				result.add(e);
 			}
 		}
@@ -98,12 +102,20 @@ public class ExifMapDao {
 				result.setPath(rs.getString(i++));
 				result.setName(rs.getString(i++));
 				result.setSize(rs.getLong(i++));
+				result.setExifDate(rs.getTimestamp(i++));
 				break;
 			}
 			return result;
 		}
 		
 		return null;
+	}
+	
+	public int delete(ExifMap exifMap) throws SQLException {
+		PreparedStatement st =
+				conn.prepareStatement(ExifMapTable.DELETE_EXIF_MAP_TABLE_SQL);
+		st.setLong(1, exifMap.getId());
+		return st.executeUpdate();
 	}
 	
 	public void drop() throws SQLException {

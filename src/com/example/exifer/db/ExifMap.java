@@ -1,6 +1,6 @@
 package com.example.exifer.db;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class ExifMap {
 	public static final long ID_UNKNOWN = -1;
@@ -8,7 +8,7 @@ public class ExifMap {
 	long id = ID_UNKNOWN;
 	String path = null;
 	String name = null;
-	Date exifDate = null;
+	Timestamp exifDate = null;
 	long size = 0L;
 	public String getPath() {
 		return path;
@@ -28,10 +28,10 @@ public class ExifMap {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Date getExifDate() {
+	public Timestamp getExifDate() {
 		return exifDate;
 	}
-	public void setExifDate(Date exifDate) {
+	public void setExifDate(Timestamp exifDate) {
 		this.exifDate = exifDate;
 	}
 	public long getSize() {
