@@ -16,7 +16,7 @@ public class ExifMapDao {
 	public ExifMapDao() throws SQLException, ClassNotFoundException  {
 		DriverManager.registerDriver(new org.apache.derby.jdbc.EmbeddedDriver());
 		conn = DriverManager.getConnection(
-				"jdbc:derby:/Users/yasuyuki/exifMap.db;create=true");
+				"jdbc:derby:/Users/yasuyuki/exifMapDB;create=true");
 		
 	}
 	
