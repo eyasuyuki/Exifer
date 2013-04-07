@@ -9,13 +9,15 @@ import javax.activation.MimetypesFileTypeMap;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
+import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.example.exifer.db.ExifMap;
 import com.example.exifer.db.ExifMapDao;
 
 public class ExifTest {
 	
-	void retrieve(File dir, ExifMapDao dao) {
+	void retrieve(File dir, ExifMapDao dao) throws MetadataException {
 		File[] files = dir.listFiles();
 		if (files == null || files.length <= 0) return;
 		for (File f: files) {
@@ -59,7 +61,7 @@ public class ExifTest {
 		
 	}
 	
-	void readExif(File file, ExifMapDao dao) {
+	void readExif(File file, ExifMapDao dao) throws MetadataException {
 		MimetypesFileTypeMap m = new MimetypesFileTypeMap();
 		if (m == null) return;
 		
@@ -74,7 +76,6 @@ public class ExifTest {
 			//e.printStackTrace();
 		}
 		if (metadata == null) return;
-		
 		Directory dir = metadata.getDirectory(ExifIFD0Directory.class);
 		if (dir == null) return;
 		
@@ -83,15 +84,20 @@ public class ExifTest {
 		long size = file.length();
 		java.util.Date date = dir.getDate(ExifIFD0Directory.TAG_DATETIME);
 		Timestamp tx = date == null ? null : new Timestamp(date.getTime());
-		System.out.println("path="+path+", name="+name+", size="+size+", date="+date);
+		String model = dir.getString(ExifIFD0Directory.TAG_MODEL);
+		System.out.println("path="+path+", model="+model+",name="+name+", size="+size+", date="+date);
 		// TODO insert to database
-		ExifMap exifmap = new ExifMap();
-		exifmap.setPath(path);
-		exifmap.setName(name);
-		exifmap.setSize(size);
-		exifmap.setExifDate(tx);
 		try {
-			dao.insert(exifmap);
+			ExifMap prev = dao.find(name, tx);
+			if (prev == null || prev.getSize() < size) {
+				ExifMap exifmap = new ExifMap();
+				exifmap.setPath(path);
+				exifmap.setModel(model);
+				exifmap.setName(name);
+				exifmap.setSize(size);
+				exifmap.setExifDate(tx);
+				dao.insert(exifmap);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
