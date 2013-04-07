@@ -7,6 +7,7 @@ public class ExifMap {
 	public ExifMap() {}
 	long id = ID_UNKNOWN;
 	String path = null;
+	String model = null;
 	String name = null;
 	Timestamp exifDate = null;
 	long size = 0L;
@@ -39,5 +40,11 @@ public class ExifMap {
 	}
 	public void setSize(long size) {
 		this.size = size;
+	}
+	public String getModel() {
+		return model;
+	}
+	public void setModel(String model) {
+		this.model = model;
 	}
 }

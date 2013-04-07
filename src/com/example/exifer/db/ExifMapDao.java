@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -34,6 +35,7 @@ public class ExifMapDao {
 						,Statement.RETURN_GENERATED_KEYS);
 		int i = 1;
 		st.setString(i++,    exifMap.getPath());
+		st.setString(i++,    exifMap.getModel());
 		st.setString(i++,    exifMap.getName());
 		st.setLong(i++,      exifMap.getSize());
 		st.setTimestamp(i++, exifMap.getExifDate());
@@ -57,6 +59,7 @@ public class ExifMapDao {
 		int i = 1;
 		st.setString(i++,    exifMap.getPath());
 		st.setString(i++,    exifMap.getName());
+		st.setString(i++,    exifMap.getModel());
 		st.setLong(i++,      exifMap.getSize());
 		st.setTimestamp(i++, exifMap.getExifDate());
 		st.setLong(i++,      exifMap.getId());
@@ -78,6 +81,7 @@ public class ExifMapDao {
 				int i = 1;
 				e.setId(rs.getLong(i++));
 				e.setPath(rs.getString(i++));
+				e.setModel(rs.getString(i++));
 				e.setName(rs.getString(i++));
 				e.setSize(rs.getLong(i++));
 				e.setExifDate(rs.getTimestamp(i++));
@@ -100,6 +104,7 @@ public class ExifMapDao {
 				int i = 1;
 				result.setId(rs.getLong(i++));
 				result.setPath(rs.getString(i++));
+				result.setModel(rs.getString(i++));
 				result.setName(rs.getString(i++));
 				result.setSize(rs.getLong(i++));
 				result.setExifDate(rs.getTimestamp(i++));
@@ -110,6 +115,32 @@ public class ExifMapDao {
 		
 		return null;
 	}
+
+	public ExifMap find(String name, Timestamp timestamp) throws SQLException {
+		ExifMap result = null;
+		PreparedStatement st =
+				conn.prepareStatement(ExifMapTable.SELECT_NAME_DATE_EXIF_MAP_TABLE_SQL);
+		st.setString(1,    name);
+		st.setTimestamp(2, timestamp);
+		ResultSet rs = st.executeQuery();
+		if (rs != null) {
+			while (rs.next()) {
+				result = new ExifMap();
+				int i = 1;
+				result.setId(rs.getLong(i++));
+				result.setPath(rs.getString(i++));
+				result.setModel(rs.getString(i++));
+				result.setName(rs.getString(i++));
+				result.setSize(rs.getLong(i++));
+				result.setExifDate(rs.getTimestamp(i++));
+				break;
+			}
+			return result;
+		}
+		
+		return null;
+	}
+	
 	
 	public int delete(ExifMap exifMap) throws SQLException {
 		PreparedStatement st =
