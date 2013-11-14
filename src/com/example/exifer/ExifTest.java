@@ -1,28 +1,27 @@
 package com.example.exifer;
 
 import java.io.File;
-import java.sql.SQLException;
+import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import javax.activation.MimetypesFileTypeMap;
+import org.apache.commons.io.FileUtils;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
 import com.drew.metadata.exif.ExifIFD0Directory;
-import com.drew.metadata.exif.ExifSubIFDDirectory;
-import com.example.exifer.db.ExifMap;
-import com.example.exifer.db.ExifMapDao;
 
 public class ExifTest {
 	
-	void retrieve(File dir, ExifMapDao dao) throws MetadataException {
+	void retrieve(File dir, File destRoot) throws MetadataException {
 		File[] files = dir.listFiles();
 		if (files == null || files.length <= 0) return;
 		for (File f: files) {
-			if (f.isFile())      readExif(f, dao);
-			if (f.isDirectory()) retrieve(f, dao);
+			if (f.isFile())      readExif(f, destRoot);
+			if (f.isDirectory()) retrieve(f, destRoot);
 		}
 	}
 
@@ -30,45 +29,34 @@ public class ExifTest {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if (args.length <= 0) {
+		if (args.length < 2) {
 			usage();
 			return;
 		}
-		ExifMapDao dao = null;
-		try {
-			dao = new ExifMapDao();
-			try { dao.drop(); } catch (Exception e) {}
-			dao.create();
 
-			File file = new File(args[0]);
-			ExifTest test = new ExifTest();
-			test.retrieve(file, dao);
-		} catch (Exception e) {
+		File file = new File(args[0]);
+		File destRoot = new File(args[1]);
+		ExifTest test = new ExifTest();
+		try {
+			test.retrieve(file, destRoot);
+		} catch (MetadataException e) {
 			e.printStackTrace();
 		}
-		try { dao.close(); } catch (Exception e) {}
-		try {
-			dao.shutdown();
-		} catch (SQLException e) {
-			if ("XJ015".equals(e.getSQLState())) {
-				e.printStackTrace();
-			} else {
-				//シャットダウン失敗
-				//throw e;
-			}
-		}
-		
-		
 	}
 	
-	void readExif(File file, ExifMapDao dao) throws MetadataException {
-		MimetypesFileTypeMap m = new MimetypesFileTypeMap();
-		if (m == null) return;
-		
-//		String contentType = m.getContentType(file);
-//		if (contentType == null || !contentType.equals("image/jpeg")) return;
-//		System.out.println("processFile: file.getName()="+file.getName()+", contentType="+contentType);;
-		
+	File forceMkdir(File parent, Date date) throws IOException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+		String path = sdf.format(date);
+		File dir = new File(parent, path);
+		if (dir.exists()) {
+			if (dir.isDirectory()) return dir;
+			if (dir.isFile()) dir.delete();
+		}
+		FileUtils.forceMkdir(dir);
+		return dir;
+	}
+	
+	void readExif(File file, File destRoot) throws MetadataException {
 		Metadata metadata = null;
 		try {
 			metadata = ImageMetadataReader.readMetadata(file);
@@ -86,19 +74,13 @@ public class ExifTest {
 		Timestamp tx = date == null ? null : new Timestamp(date.getTime());
 		String model = dir.getString(ExifIFD0Directory.TAG_MODEL);
 		System.out.println("path="+path+", model="+model+",name="+name+", size="+size+", date="+date);
-		// TODO insert to database
+		if (date == null) return;
 		try {
-			ExifMap prev = dao.find(name, tx);
-			if (prev == null || prev.getSize() < size) {
-				ExifMap exifmap = new ExifMap();
-				exifmap.setPath(path);
-				exifmap.setModel(model);
-				exifmap.setName(name);
-				exifmap.setSize(size);
-				exifmap.setExifDate(tx);
-				dao.insert(exifmap);
-			}
-		} catch (SQLException e) {
+			File destPath = forceMkdir(destRoot, date);
+			File destFile = new File(destPath, name);
+			if (destFile.exists() && destFile.length() >= size) return;
+			FileUtils.copyFileToDirectory(file, destPath);
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
