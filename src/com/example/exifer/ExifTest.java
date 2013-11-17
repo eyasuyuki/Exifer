@@ -44,10 +44,10 @@ public class ExifTest {
 		}
 	}
 	
-	File forceMkdir(File parent, Date date) throws IOException {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+	File forceMkdir(File parent, String model, Date date) throws IOException {
+		SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd");
 		String path = sdf.format(date);
-		File dir = new File(parent, path);
+		File dir = new File(parent, model+path);
 		if (dir.exists()) {
 			if (dir.isDirectory()) return dir;
 			if (dir.isFile()) dir.delete();
@@ -73,10 +73,11 @@ public class ExifTest {
 		java.util.Date date = dir.getDate(ExifIFD0Directory.TAG_DATETIME);
 		Timestamp tx = date == null ? null : new Timestamp(date.getTime());
 		String model = dir.getString(ExifIFD0Directory.TAG_MODEL);
+		if (model == null || model.length() == 0) model = "Unknown";
 		System.out.println("path="+path+", model="+model+",name="+name+", size="+size+", date="+date);
 		if (date == null) return;
 		try {
-			File destPath = forceMkdir(destRoot, date);
+			File destPath = forceMkdir(destRoot, model, date);
 			File destFile = new File(destPath, name);
 			if (destFile.exists() && destFile.length() >= size) return;
 			FileUtils.copyFileToDirectory(file, destPath);
