@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -24,6 +25,8 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import com.drew.metadata.MetadataException;
 
@@ -34,6 +37,9 @@ public class MainFrame extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final String NEWLINE = System.getProperty("line.separator");
+	private static final Preferences prefs = Preferences.userNodeForPackage(MainFrame.class);
+	private static final String SRC_KEY = "src";
+	private static final String DEST_KEY = "dest";
 	private JPanel contentPane;
 	private JTextField srcField;
 	private JTextField destField;
@@ -75,7 +81,6 @@ public class MainFrame extends JFrame {
 		} else {
 			chooser = new JFileChooser();
 		}
-		// DOTO set listener
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		if (chooser.showOpenDialog(MainFrame.this) == JFileChooser.APPROVE_OPTION) {
 			File dir = chooser.getSelectedFile();
@@ -183,10 +188,44 @@ public class MainFrame extends JFrame {
 		srcField = new JTextField();
 		srcField.setColumns(10);
 		srcField.setDropTarget(srcTarget);
+		srcField.setText(prefs.get(SRC_KEY, ""));
+		srcField.getDocument().addDocumentListener(new DocumentListener(){
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				prefs.put(SRC_KEY, srcField.getText());
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				prefs.put(SRC_KEY, srcField.getText());
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				prefs.put(SRC_KEY, srcField.getText());
+			}});
 		
 		destField = new JTextField();
 		destField.setColumns(10);
 		destField.setDropTarget(destTarget);
+		destField.setText(prefs.get(DEST_KEY, ""));
+		destField.getDocument().addDocumentListener(new DocumentListener(){
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				prefs.put(DEST_KEY, destField.getText());
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				prefs.put(DEST_KEY, destField.getText());
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				prefs.put(DEST_KEY, destField.getText());
+			}});
 		
 		JButton srcButton = new JButton("File...");
 		srcButton.addActionListener(new ActionListener() {
