@@ -46,7 +46,7 @@ public class Exifer {
 		return dir;
 	}
 	
-	void copyExif(File file, File destRoot) throws MetadataException {
+	void copyExif(File file, File destRoot, boolean setExifDate, boolean forceCopy) throws MetadataException {
 		Metadata metadata = null;
 		try {
 			metadata = ImageMetadataReader.readMetadata(file);
@@ -75,8 +75,9 @@ public class Exifer {
 		try {
 			File destPath = forceMkdir(destRoot, model, date);
 			File destFile = new File(destPath, name);
-			if (destFile.exists() && destFile.length() >= size) return;
+			if (!forceCopy && destFile.exists() && destFile.length() >= size) return;
 			FileUtils.copyFileToDirectory(file, destPath);
+			if (setExifDate) file.setLastModified(date.getTime());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
