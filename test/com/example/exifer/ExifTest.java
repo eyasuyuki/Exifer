@@ -1,18 +1,8 @@
 package com.example.exifer;
 
 import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-import org.apache.commons.io.FileUtils;
-
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.metadata.Directory;
-import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
-import com.drew.metadata.exif.ExifIFD0Directory;
 
 public class ExifTest {
 	
@@ -30,7 +20,7 @@ public class ExifTest {
 
 		if (files == null || files.length <= 0) return;
 		for (File f: files) {
-			if (f.isFile())      exifer.copyExif(f, destRoot);
+			if (f.isFile())      exifer.copyExif(f, destRoot, true, false);
 			if (f.isDirectory()) retrieve(f, destRoot);
 		}
 	}
