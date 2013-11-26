@@ -16,6 +16,7 @@ import java.util.prefs.Preferences;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -25,6 +26,8 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -40,10 +43,16 @@ public class MainFrame extends JFrame {
 	private static final Preferences prefs = Preferences.userNodeForPackage(MainFrame.class);
 	private static final String SRC_KEY = "src";
 	private static final String DEST_KEY = "dest";
+	private static final String RECURSIVE_KEY = "recursive";
+	private static final String SET_EXIF_DATE_KEY = "set_exif_date";
+	private static final String FORCE_COPY_KEY = "force_copy";
 	private JPanel contentPane;
 	private JTextField srcField;
 	private JTextField destField;
 	private JTextArea textArea;
+	private JCheckBox chckbxRecursive;
+	private JCheckBox chckbxSetExifDate;
+	private JCheckBox chckbxForceCopy;
 	Object mutex = new Object();
 	boolean stop = false;
 	
@@ -128,14 +137,14 @@ public class MainFrame extends JFrame {
 			textArea.invalidate();
 		}};
 		
-	void retrieve(File dir, File destRoot, Exifer exifer) throws MetadataException {
+	void retrieve(File dir, File destRoot, Exifer exifer, boolean recursive, boolean setExifDate, boolean forceCopy) throws MetadataException {
 		File[] files = dir.listFiles();
 
 		if (files == null || files.length <= 0) return;
 		for (File f: files) {
 			if (isStop()) break;
-			if (f.isFile())      exifer.copyExif(f, destRoot);
-			if (f.isDirectory()) retrieve(f, destRoot, exifer);
+			if (f.isFile())                   exifer.copyExif(f, destRoot, setExifDate, forceCopy);
+			if (f.isDirectory() && recursive) retrieve(f, destRoot, exifer, recursive, setExifDate, forceCopy);
 		}
 	}
 
@@ -164,7 +173,10 @@ public class MainFrame extends JFrame {
 						Exifer exifer = new Exifer();
 						exifer.addExifListener(listener);
 						try {
-							retrieve(src, dest, exifer);
+							retrieve(src, dest, exifer,
+									chckbxRecursive.isSelected(),
+									chckbxSetExifDate.isSelected(),
+									chckbxForceCopy.isSelected());
 						} catch (Exception e1) {
 							e1.printStackTrace();
 						}
@@ -181,6 +193,33 @@ public class MainFrame extends JFrame {
 			}
 		});
 		toolBar.add(stopButton);
+		
+		chckbxRecursive = new JCheckBox("Recursive");
+		chckbxRecursive.setSelected(prefs.getBoolean(RECURSIVE_KEY, false));
+		chckbxRecursive.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				prefs.putBoolean(RECURSIVE_KEY, chckbxRecursive.isSelected());
+			}});
+		toolBar.add(chckbxRecursive);
+		
+		chckbxSetExifDate = new JCheckBox("Set as EXIF date");
+		chckbxSetExifDate.setSelected(prefs.getBoolean(SET_EXIF_DATE_KEY, false));
+		chckbxSetExifDate.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				prefs.putBoolean(SET_EXIF_DATE_KEY, chckbxSetExifDate.isSelected());
+			}});
+		toolBar.add(chckbxSetExifDate);
+		
+		chckbxForceCopy = new JCheckBox("Force copy");
+		chckbxForceCopy.setSelected(prefs.getBoolean(FORCE_COPY_KEY, false));
+		chckbxForceCopy.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				prefs.putBoolean(FORCE_COPY_KEY, chckbxForceCopy.isSelected());
+			}});
+		toolBar.add(chckbxForceCopy);
 		
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
