@@ -36,7 +36,9 @@ public class Exifer {
 	
 	File forceMkdir(File parent, String model, Date date) throws IOException {
 		SimpleDateFormat sdf = new SimpleDateFormat("/yyyy/MM/dd");
-		String path = sdf.format(date);
+		String path = null;
+		if (date != null) path = sdf.format(date);
+		else              path = "/Unknown";
 		File dir = new File(parent, model+path);
 		if (dir.exists()) {
 			if (dir.isDirectory()) return dir;
@@ -46,7 +48,7 @@ public class Exifer {
 		return dir;
 	}
 	
-	void copyExif(File file, File destRoot, boolean setExifDate, boolean forceCopy) throws MetadataException {
+	void copyExif(File file, File destRoot, boolean setExifDate, boolean forceCopy, boolean move) throws MetadataException {
 		Metadata metadata = null;
 		try {
 			metadata = ImageMetadataReader.readMetadata(file);
@@ -61,7 +63,7 @@ public class Exifer {
 		String name = file.getName();
 		long size = file.length();
 		java.util.Date date = dir.getDate(ExifIFD0Directory.TAG_DATETIME);
-		Timestamp tx = date == null ? null : new Timestamp(date.getTime());
+		//Timestamp tx = date == null ? null : new Timestamp(date.getTime());
 		String model = dir.getString(ExifIFD0Directory.TAG_MODEL);
 		if (model == null || model.length() == 0) model = "Unknown";
 		if (listeners != null && listeners.size() > 0) {
@@ -71,13 +73,14 @@ public class Exifer {
 				}
 			}
 		}
-		if (date == null) return;
+		//if (date == null) return;
 		try {
 			File destPath = forceMkdir(destRoot, model, date);
 			File destFile = new File(destPath, name);
 			if (!forceCopy && destFile.exists() && destFile.length() >= size) return;
 			FileUtils.copyFileToDirectory(file, destPath);
-			if (setExifDate) file.setLastModified(date.getTime());
+			if (setExifDate && date != null) file.setLastModified(date.getTime());
+			if (move) FileUtils.deleteQuietly(file);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
