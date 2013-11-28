@@ -46,15 +46,18 @@ public class MainFrame extends JFrame {
 	private static final String RECURSIVE_KEY = "recursive";
 	private static final String SET_EXIF_DATE_KEY = "set_exif_date";
 	private static final String FORCE_COPY_KEY = "force_copy";
+	private static final String MOVE_KEY = "move";
 	private JPanel contentPane;
+	private JButton copyButton;
 	private JTextField srcField;
 	private JTextField destField;
 	private JTextArea textArea;
 	private JCheckBox chckbxRecursive;
 	private JCheckBox chckbxSetExifDate;
 	private JCheckBox chckbxForceCopy;
-	Object mutex = new Object();
-	boolean stop = false;
+	private JCheckBox chckbxMove;
+	private Object mutex = new Object();
+	private boolean stop = false;
 	
 	public void setStop(boolean stop) {
 		synchronized (mutex) {
@@ -137,14 +140,20 @@ public class MainFrame extends JFrame {
 			textArea.invalidate();
 		}};
 		
-	void retrieve(File dir, File destRoot, Exifer exifer, boolean recursive, boolean setExifDate, boolean forceCopy) throws MetadataException {
+	void retrieve(File dir, File destRoot,
+			Exifer exifer, boolean recursive, boolean setExifDate,
+			boolean forceCopy, boolean move) throws MetadataException {
 		File[] files = dir.listFiles();
 
 		if (files == null || files.length <= 0) return;
 		for (File f: files) {
 			if (isStop()) break;
-			if (f.isFile())                   exifer.copyExif(f, destRoot, setExifDate, forceCopy);
-			if (f.isDirectory() && recursive) retrieve(f, destRoot, exifer, recursive, setExifDate, forceCopy);
+			if (f.isFile()) {
+				exifer.copyExif(f, destRoot, setExifDate, forceCopy, move);
+			}
+			if (f.isDirectory() && recursive) {
+				retrieve(f, destRoot, exifer, recursive, setExifDate, forceCopy, move);
+			}
 		}
 	}
 
@@ -153,7 +162,7 @@ public class MainFrame extends JFrame {
 	 */
 	public MainFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 800, 600);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPane.setLayout(new BorderLayout(0, 0));
@@ -162,7 +171,7 @@ public class MainFrame extends JFrame {
 		JToolBar toolBar = new JToolBar();
 		contentPane.add(toolBar, BorderLayout.NORTH);
 		
-		JButton copyButton = new JButton("Copy");
+		copyButton = new JButton("Copy");
 		copyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Thread thread = new Thread(new Runnable(){
@@ -173,10 +182,12 @@ public class MainFrame extends JFrame {
 						Exifer exifer = new Exifer();
 						exifer.addExifListener(listener);
 						try {
-							retrieve(src, dest, exifer,
-									chckbxRecursive.isSelected(),
-									chckbxSetExifDate.isSelected(),
-									chckbxForceCopy.isSelected());
+							retrieve(src, dest, exifer
+									,chckbxRecursive.isSelected()
+									,chckbxSetExifDate.isSelected()
+									,chckbxForceCopy.isSelected()
+									,chckbxMove.isSelected()
+									);
 						} catch (Exception e1) {
 							e1.printStackTrace();
 						}
@@ -220,6 +231,17 @@ public class MainFrame extends JFrame {
 				prefs.putBoolean(FORCE_COPY_KEY, chckbxForceCopy.isSelected());
 			}});
 		toolBar.add(chckbxForceCopy);
+		
+		chckbxMove = new JCheckBox("Move");
+		chckbxMove.setSelected(prefs.getBoolean(MOVE_KEY, false));
+		chckbxMove.addChangeListener(new ChangeListener(){
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				prefs.putBoolean(MOVE_KEY, chckbxMove.isSelected());
+				if (chckbxMove.isSelected()) copyButton.setText("Move");
+				else						 copyButton.setText("Copy");
+			}});
+		toolBar.add(chckbxMove);
 		
 		JPanel panel = new JPanel();
 		contentPane.add(panel, BorderLayout.CENTER);
