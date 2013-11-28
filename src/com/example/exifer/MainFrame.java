@@ -170,8 +170,9 @@ public class MainFrame extends JFrame {
 		
 		JToolBar toolBar = new JToolBar();
 		contentPane.add(toolBar, BorderLayout.NORTH);
-		
-		copyButton = new JButton("Copy");
+
+		if (prefs.getBoolean(MOVE_KEY, false))	copyButton = new JButton("Move");
+		else									copyButton = new JButton("Copy");
 		copyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Thread thread = new Thread(new Runnable(){
