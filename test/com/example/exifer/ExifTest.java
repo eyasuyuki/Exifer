@@ -20,7 +20,7 @@ public class ExifTest {
 
 		if (files == null || files.length <= 0) return;
 		for (File f: files) {
-			if (f.isFile())      exifer.copyExif(f, destRoot, true, false);
+			if (f.isFile())      exifer.copyExif(f, destRoot, true, false, false);
 			if (f.isDirectory()) retrieve(f, destRoot);
 		}
 	}
