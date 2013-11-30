@@ -79,7 +79,13 @@ public class Exifer {
 			File destFile = new File(destPath, name);
 			if (!forceCopy && destFile.exists() && destFile.length() >= size) return;
 			FileUtils.copyFileToDirectory(file, destPath);
-			if (setExifDate && date != null) file.setLastModified(date.getTime());
+			long t;
+			if (date == null || date.getTime() <= 0) {
+				t = file.lastModified();
+			} else {
+				t = date.getTime();
+			}
+			if (setExifDate) file.setLastModified(t);
 			if (move) FileUtils.deleteQuietly(file);
 		} catch (IOException e) {
 			e.printStackTrace();
