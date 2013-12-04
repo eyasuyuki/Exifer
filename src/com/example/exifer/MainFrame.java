@@ -183,12 +183,19 @@ public class MainFrame extends JFrame {
 						Exifer exifer = new Exifer();
 						exifer.addExifListener(listener);
 						try {
+							textArea.setText("");
 							retrieve(src, dest, exifer
 									,chckbxRecursive.isSelected()
 									,chckbxSetExifDate.isSelected()
 									,chckbxForceCopy.isSelected()
 									,chckbxMove.isSelected()
 									);
+							if (listener != null) {
+								synchronized (listener) {
+									String state = stop ? "Stop." : "Done.";
+									listener.update(state);
+								}
+							}
 						} catch (Exception e1) {
 							e1.printStackTrace();
 						}
