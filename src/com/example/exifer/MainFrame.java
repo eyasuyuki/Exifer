@@ -175,6 +175,7 @@ public class MainFrame extends JFrame {
 		else									copyButton = new JButton("Copy");
 		copyButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				stop = false;
 				Thread thread = new Thread(new Runnable(){
 					@Override
 					public void run() {
